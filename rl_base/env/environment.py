@@ -12,7 +12,7 @@ class Environment(abc.ABC):
     def cycle(self, agent: Agent):
         state = self.get_state(agent)
         action = agent.choose_action(state)
-        reward = self.perform(agent, action)
+        reward, action = self.perform(agent, action)
         agent.learn(state=state, action=action, reward=reward)
 
     @abc.abstractmethod

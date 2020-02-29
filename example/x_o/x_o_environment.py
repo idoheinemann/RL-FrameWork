@@ -24,6 +24,7 @@ class XOEnvironment(Environment):
         self.o_player = o_player
         self.winner = None
         self.rewards = {x_player: [], o_player: []}
+        self.should_continue = True
 
     def get_state(self, agent: Agent):
         return self.board.flatten()
@@ -31,14 +32,17 @@ class XOEnvironment(Environment):
     def perform(self, agent: Agent, action: np.ndarray):
         action = action.flatten()
         action = sorted(enumerate(action), key=lambda x: x[1], reverse=True)
+        action_index = -1
         for i, p in action:
             if self._perform(i, agent):
+                action_index = i
                 break
         self.rewards[agent].append(0)
-        if self.is_game_over():
+        if self._is_game_over():
+            self.should_continue = False
             self.rewards[agent][-1] = self._get_reward(agent)
             self.rewards[self._get_other_agent(agent)][-1] = self._get_reward(self._get_other_agent(agent))
-        return XOReward(index=len(self.rewards[agent]) - 1, env=self, agent=agent)
+        return XOReward(index=len(self.rewards[agent]) - 1, env=self, agent=agent), action_index
 
     def _get_other_agent(self, agent):
         if agent is self.x_player:
@@ -55,7 +59,7 @@ class XOEnvironment(Environment):
     def _perform(self, index, agent):
         index = self._get_board_index(index)
         loc = self.board[index]
-        if loc[0]:
+        if loc[0] == 1.0:
             self.board[index] = [0, 0, 0]
             self.board[index][self._get_agent_index(agent)] = 1
             return True
@@ -66,23 +70,28 @@ class XOEnvironment(Environment):
             return 0
         return 1 if agent is self.winner else -1
 
-    def is_game_over(self):
+    def _is_game_over(self):
         for i in range(3):
-            point = self.board[i, 0]
-            if all(self.board[i, 1] == point) and all(self.board[i, 2] == point) and point[0] != 0:
-                self.winner = self.x_player if point[1] == 1 else self.o_player
+            if self._is_three_points_win(self.board[i, 0], self.board[i, 1], self.board[i, 2]):
+                return True
 
         for i in range(3):
-            point = self.board[0, i]
-            if all(self.board[1, i] == point) and all(self.board[2, i] == point) and point[0] != 0:
-                self.winner = self.x_player if point[1] == 1 else self.o_player
+            if self._is_three_points_win(self.board[0, i], self.board[1, i], self.board[2, i]):
+                return True
 
-        point = self.board[0, 0]
-        if all(self.board[1, 1] == point) and all(self.board[2, 2] == point) and point[0] != 0:
-            self.winner = self.x_player if point[1] == 1 else self.o_player
+        if self._is_three_points_win(self.board[0, 0], self.board[1, 1], self.board[2, 2]):
+            return True
 
-        point = self.board[2, 0]
-        if all(self.board[1, 1] == point) and all(self.board[0, 2] == point) and point[0] != 0:
-            self.winner = self.x_player if point[1] == 1 else self.o_player
+        if self._is_three_points_win(self.board[2, 0], self.board[1, 1], self.board[0, 2]):
+            return True
 
-        return self.winner is not None
+        return not any(self.board.flatten()[::3])
+
+    def _is_three_points_win(self, p1, p2, p3):
+        if all(p1 == p2) and all(p3 == p1) and p1[0] == 0:
+            self.winner = self.x_player if p1[1] == 1 else self.o_player
+            return True
+        return False
+
+    def get_player_array(self, idx):
+        return self.board.flatten()[idx::3].reshape(3, 3)
