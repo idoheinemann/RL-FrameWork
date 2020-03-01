@@ -26,7 +26,7 @@ def game(x_player, o_player):
     x_player.conclude()
     o_player.conclude()
     if has_human_players:
-        print(env.get_player_array(1) + 2*env.get_player_array(2))
+        print(env.get_player_array(1) + 2 * env.get_player_array(2))
     return str(env.winner)
 
 
@@ -39,7 +39,7 @@ def main():
         o_player = pkl.load(open('o_player.pkl', 'rb'))
     else:
         o_player = XOAgent('O')
-    num_games = 10000000
+    num_games = 1  # 10000000 to train from scratch
     for i in range(num_games):
         game(x_player, o_player)
         sys.stdout.write(f'\rgames completed: {i / num_games * 100}%')
