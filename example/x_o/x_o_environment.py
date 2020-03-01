@@ -1,60 +1,24 @@
 from typing import Tuple
 
 from rl_base.agent.agent import Agent
-from rl_base.env.environment import Environment
 
 import numpy as np
 
-
-class XOReward:
-    def __init__(self, index, env, agent):
-        self.index = index
-        self.env = env
-        self.agent = agent
-
-    def get(self) -> float:
-        return self.env.rewards[self.agent][self.index]
+from rl_base.env.board_game_environment import BoardGameEnvironment
 
 
-class XOEnvironment(Environment):
-    def __init__(self, x_player, o_player):
+class XOEnvironment(BoardGameEnvironment):
+    def __init__(self, first_player, second_player):
+        super().__init__(first_player, second_player)
         self.board = np.zeros((3, 3, 3))
         self.board[:, :, 0] = 1.0
-        self.x_player = x_player
-        self.o_player = o_player
-        self.winner = None
-        self.rewards = {x_player: [], o_player: []}
-        self.should_continue = True
 
     def get_state(self, agent: Agent):
         return self.board.flatten()
 
-    def perform(self, agent: Agent, action: np.ndarray):
-        action = action.flatten()
-        action = sorted(enumerate(action), key=lambda x: x[1], reverse=True)
-        action_index = -1
-        for i, p in action:
-            if self._perform(i, agent):
-                action_index = i
-                break
-        self.rewards[agent].append(0)
-        if self._is_game_over():
-            self.should_continue = False
-            self.rewards[agent][-1] = self._get_reward(agent)
-            self.rewards[self._get_other_agent(agent)][-1] = self._get_reward(self._get_other_agent(agent))
-        return XOReward(index=len(self.rewards[agent]) - 1, env=self, agent=agent), action_index
-
-    def _get_other_agent(self, agent):
-        if agent is self.x_player:
-            return self.o_player
-        return self.x_player
-
     @staticmethod
     def _get_board_index(number: int) -> Tuple[int, int]:
-        return number // 3, number % 3
-
-    def _get_agent_index(self, agent):
-        return int(agent is self.o_player) + 1
+        return number % 3, number // 3
 
     def _perform(self, index, agent):
         index = self._get_board_index(index)
@@ -89,9 +53,15 @@ class XOEnvironment(Environment):
 
     def _is_three_points_win(self, p1, p2, p3):
         if all(p1 == p2) and all(p3 == p1) and p1[0] == 0:
-            self.winner = self.x_player if p1[1] == 1 else self.o_player
+            self.winner = self.first_player if p1[1] == 1 else self.second_player
             return True
         return False
 
     def get_player_array(self, idx):
         return self.board.flatten()[idx::3].reshape(3, 3)
+
+    def __str__(self):
+        return str((self.get_player_array(1) + 2 * self.get_player_array(2)).astype(int)) \
+            .replace('1', 'X') \
+            .replace('2', 'O') \
+            .replace('0', '-')

@@ -3,17 +3,16 @@ import numpy as np
 from rl_base.agent.agent import Agent
 
 
-class XOHuman(Agent):
+class FIARHuman(Agent):
     def __init__(self):
         super().__init__()
 
     def choose_action(self, state):
         while True:
             try:
-                x = int(input('Enter X loc >>> '))
-                y = int(input('Enter Y loc >>> '))
-                action = np.zeros(9)
-                action[x * 3 + y] = 1
+                x = int(input('Enter Row Index >>> '))
+                action = np.zeros(8)
+                action[x] = 1
                 break
             except Exception as e:
                 print(f'Illegal state detected: {e}')
