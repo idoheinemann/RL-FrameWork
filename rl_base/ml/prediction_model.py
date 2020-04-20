@@ -11,5 +11,5 @@ class PredictionModel(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def train(self, data: Data, label: Label) -> float:
+    def train(self, data: Data, label: Label):
         pass

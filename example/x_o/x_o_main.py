@@ -31,6 +31,7 @@ def main():
         if len(percent_string) < 6:
             percent_string += '0' * (6-len(percent_string))
         sys.stdout.write(f'\rgames completed: {percent_string}%, estimated time: {seconds_to_string(time_left)}')
+        sys.stdout.flush()
     pkl.dump(x_player, open('x_player.pkl', 'wb'))
     pkl.dump(o_player, open('o_player.pkl', 'wb'))
     print(x_player.model.layers[0].max())

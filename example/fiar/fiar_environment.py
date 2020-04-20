@@ -5,7 +5,7 @@ from rl_base.env.board_game_environment import BoardGameEnvironment
 
 
 class FIAREnvironment(BoardGameEnvironment):
-    BOARD_WIDTH = 8
+    BOARD_WIDTH = 7
     BOARD_HEIGHT = 6
 
     def __init__(self, first_player, second_player):
