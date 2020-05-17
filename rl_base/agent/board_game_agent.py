@@ -30,4 +30,4 @@ class BoardGameAgent(Agent, abc.ABC):
             label.append(label_temp)
 
         self.model.train(np.array(data), np.array(label))
-        self.memory.clear()
+        self.memory = []

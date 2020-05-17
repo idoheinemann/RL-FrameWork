@@ -118,7 +118,7 @@ class RecurrentNeuralNetwork(PredictionModel):
 def main():
     rnn = RecurrentNeuralNetwork((2, 3, 1), Sigmoid)
     data, label = [], []
-    for i in range(10):
+    for i in range(1):
         tmp_data = []
         carry = 0
         tmp_label = []
@@ -134,14 +134,14 @@ def main():
     for i, d in enumerate(data[0]):
         print(rnn.predict(d), label[0][i], sep=' | ')
 
-    for i in range(100000):
+    for i in range(50000):
         rnn.train(data, label)
 
     print('Finished Training')
 
     rnn.reset()
     for i, d in enumerate(data[0]):
-        print(rnn.predict(d), label[0][i], sep=' | ')
+        print(d, rnn.predict(d), label[0][i], sep=' | ')
 
 
 if __name__ == '__main__':

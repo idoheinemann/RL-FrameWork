@@ -9,7 +9,7 @@ class Agent(abc.ABC):
     def choose_action(self, state):
         pass
 
-    def learn(self, state, action, reward):
+    def learn(self, state, action, reward, new_state=None):
         self.memory.append((state, action, reward))
 
     @abc.abstractmethod

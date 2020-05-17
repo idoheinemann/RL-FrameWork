@@ -6,7 +6,7 @@ import time
 from example.x_o.x_o_agent import XOAgent
 from example.x_o.x_o_environment import XOEnvironment
 from example.x_o.x_o_human import XOHuman
-from tools.string_tools import seconds_to_string
+from module_tools.string_tools import seconds_to_string
 
 
 def main():

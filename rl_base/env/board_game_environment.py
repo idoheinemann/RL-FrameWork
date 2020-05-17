@@ -76,4 +76,6 @@ class BoardGameEnvironment(Environment, abc.ABC):
         second_player.conclude()
         if has_human_players:
             print(env)
-        return str(env.winner)
+        winner = str(env.winner)
+        del env
+        return winner

@@ -37,12 +37,13 @@ class Relu(NonLinearityFunction):
 
 class LinearRelu(NonLinearityFunction):
     @staticmethod
+    @np.vectorize
     def calc(x):
-        return x if x > 0 else 0
+        return x if x > 0.0 else 0.0
 
     @staticmethod
     def deriv(x):
-        return 1
+        return np.ones_like(x)
 
 
 class Linear(NonLinearityFunction):

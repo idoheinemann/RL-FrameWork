@@ -6,11 +6,13 @@ from rl_base.ml.non_linearity_function import NonLinearityFunctionType
 from rl_base.ml.prediction_model import PredictionModel
 from rl_base.ml.tools.functions import Sigmoid, Tanh
 
+def unit(x):
+    return x
 
 class NeuralNetwork(PredictionModel):
     def __init__(self, layers_num: Iterable[int],
                  functions: Union[NonLinearityFunctionType, Iterable[NonLinearityFunctionType]], n_min=-0.5, n_max=0.5,
-                 alpha=0.01):
+                 alpha=0.01, gradient_method=None):
         self.layers = []
         self.biases = []
         layers = list(layers_num)
@@ -23,7 +25,12 @@ class NeuralNetwork(PredictionModel):
         for i in range(len(layers) - 1):
             self.layers.append((n_max - n_min) * np.random.rand(layers[i], layers[i + 1]) + n_min)
             self.biases.append((n_max - n_min) * np.random.rand(layers[i + 1]) + n_min)
+        if isinstance(alpha, float):
+            alpha = [alpha] * len(self.layers)
         self.alpha = alpha
+        if gradient_method is None:
+            gradient_method = unit
+        self.gradient_method = gradient_method
 
     def predict(self, data):
         for i in range(len(self.layers)):
@@ -43,13 +50,14 @@ class NeuralNetwork(PredictionModel):
         error = label - inp
         deltas = [self.non_lin_funcs[-1].deriv(inp) * error]
         for i in range(len(self.layers) - 1, 0, -1):
-            deltas.append(self.non_lin_funcs[i].deriv(inputs[i]) * np.dot(deltas[-1], self.layers[i].T))
+            deltas.append(self.non_lin_funcs[i-1].deriv(inputs[i]) * np.dot(deltas[-1], self.layers[i].T))
             # delta[i] = (delta[i+1]*layer[i+1]) .* f[i]'(input[i])
 
         deltas.reverse()
         for i, delta in enumerate(deltas):
-            self.layers[i] = self.layers[i] + self.alpha * np.dot(inputs[i].T, delta)
-            self.biases[i] = self.biases[i] + np.sum(deltas[i], axis=0)
+            self.layers[i] = self.layers[i] + self.alpha[i] * self.gradient_method(np.dot(inputs[i].T, delta))
+            self.biases[i] = self.biases[i] + self.alpha[i] * self.gradient_method(np.sum(deltas[i], axis=0))
+        return np.mean(error * error)
 
 
 def main():

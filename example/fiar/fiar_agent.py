@@ -1,6 +1,6 @@
 from example.fiar.fiar_environment import FIAREnvironment
 from rl_base.agent.board_game_agent import BoardGameAgent
-from rl_base.ml.keras_neural_network import KerasNeuralNetwork
+# from rl_base.ml.keras_neural_network import KerasNeuralNetwork
 from rl_base.ml.neural_network import NeuralNetwork
 from rl_base.ml.tools.functions import Tanh
 

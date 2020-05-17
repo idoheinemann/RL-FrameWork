@@ -6,7 +6,7 @@ import time
 from example.fiar.fiar_agent import FIARAgent
 from example.fiar.fiar_environment import FIAREnvironment
 from example.fiar.fiar_human import FIARHuman
-from tools.string_tools import seconds_to_string, delete_last_line
+from module_tools.string_tools import seconds_to_string, delete_last_line
 
 
 def main():
@@ -36,7 +36,7 @@ def main():
             if len(percent_string) < 6:
                 percent_string += '0' * (6 - len(percent_string))
             # delete_last_line()
-            # print(f'\rgames completed: {percent_string}%, estimated time: {seconds_to_string(time_left)}', end='', flush=True)
+            print(f'\rgames completed: {percent_string}%, estimated time: {seconds_to_string(time_left)}', end='', flush=True)
     except KeyboardInterrupt:
         was_interrupted = True
         import traceback
@@ -44,6 +44,8 @@ def main():
         print("Interrupted by user")
     print()
     print('finished running games')
+    red_player.memory.clear()
+    yellow_player.memory.clear()
     pkl.dump(red_player, open('red_player.pkl', 'wb'))
     pkl.dump(yellow_player, open('yellow_player.pkl', 'wb'))
     if was_interrupted:
