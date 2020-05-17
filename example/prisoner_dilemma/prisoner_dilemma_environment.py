@@ -22,6 +22,8 @@ class PrisonerDilemmaReward:
 
 class PrisonerDilemmaEnvironment(Environment):
 
+    MAX_TURNS = 10
+
     def __init__(self, first_agent, second_agent):
         self.first_agent, self.second_agent = first_agent, second_agent
         self.first_agent_perfs = []
@@ -53,7 +55,7 @@ class PrisonerDilemmaEnvironment(Environment):
 
     @property
     def should_continue(self):
-        return self.count < 100
+        return self.count < self.MAX_TURNS
 
     @classmethod
     def game(cls, first_player, second_player, env=None, has_human_players=False):
