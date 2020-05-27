@@ -17,6 +17,8 @@ def main():
     if os.path.exists('snake.pkl') and USE_PICKLED:
         try:
             snake = pkl.load(open('snake.pkl', 'rb'))
+            snake.min_epsilon = 0.01
+            snake.flat_action_space = 3
             snake.losses = []
             snake.rewards = []
             print('using pickled snake')
