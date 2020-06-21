@@ -20,6 +20,7 @@ class BoardGameAgent(Agent, abc.ABC):
         self.cache_label = []
         self.cache_size = cache_size
         self.normalize_reward = normalize_reward
+        self.losses = []
 
     def choose_action(self, state):
         if self.epsilon > self.min_epsilon:
@@ -31,6 +32,9 @@ class BoardGameAgent(Agent, abc.ABC):
         return self.model.predict(state)
 
     def conclude(self):
+        if len(self.cache_data) > self.cache_size:
+            self.cache_data = self.cache_data[len(self.cache_data) - self.cache_size:]
+            self.cache_label = self.cache_label[len(self.cache_label) - self.cache_size:]
         data, label = [], []
         value = 0
         for state, action, reward in reversed(self.memory):
@@ -45,9 +49,6 @@ class BoardGameAgent(Agent, abc.ABC):
 
         self.cache_data += data
         self.cache_label += label
-        if len(self.cache_data) > self.cache_size:
-            self.cache_data = self.cache_data[len(self.cache_data) - self.cache_size:]
-            self.cache_label = self.cache_label[len(self.cache_label) - self.cache_size:]
 
-        self.model.train(np.array(self.cache_data), np.array(self.cache_label))
+        self.losses.append(self.model.train(self.cache_data, self.cache_label))
         self.memory = []

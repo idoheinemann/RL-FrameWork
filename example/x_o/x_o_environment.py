@@ -8,6 +8,8 @@ from rl_base.env.board_game_environment import BoardGameEnvironment
 
 
 class XOEnvironment(BoardGameEnvironment):
+    REWARD = 10
+
     def __init__(self, first_player, second_player):
         super().__init__(first_player, second_player)
         self.board = np.zeros((3, 3, 3))

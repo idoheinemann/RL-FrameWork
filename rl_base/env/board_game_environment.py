@@ -7,6 +7,8 @@ from ..agent.agent import Agent
 
 
 class BoardGameEnvironment(Environment, abc.ABC):
+    REWARD = 1
+
     class BoardGameReward:
         def __init__(self, index, env, agent):
             self.index = index
@@ -51,7 +53,7 @@ class BoardGameEnvironment(Environment, abc.ABC):
     def _get_reward(self, agent):
         if self.winner is None:
             return 0
-        return 1 if agent is self.winner else -1
+        return self.REWARD if agent is self.winner else -self.REWARD
 
     @abc.abstractmethod
     def _is_game_over(self):

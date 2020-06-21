@@ -35,6 +35,7 @@ class NeuralNetwork(PredictionModel):
         self.gradient_method = gradient_method
 
     def predict(self, data):
+        data = np.array(data)
         for i in range(len(self.layers)):
             data = self.non_lin_funcs[i].calc(data.dot(self.layers[i]) + self.biases[i])
         return data
@@ -43,6 +44,7 @@ class NeuralNetwork(PredictionModel):
         return np.sum((self.predict(data) - label) ** 2)
 
     def train(self, data, label):
+        data, label = np.array(data), np.array(label)
         inp = data
         inputs = []
         for i, layer in enumerate(self.layers):
