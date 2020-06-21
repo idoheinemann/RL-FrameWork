@@ -2,7 +2,7 @@ import os
 import sys
 import pickle as pkl
 import time
-
+import pygame
 import numpy as np
 
 from example.snake.snake_agent import SnakeAgent
@@ -13,12 +13,10 @@ from module_tools.string_tools import seconds_to_string
 USE_PICKLED = True
 
 
-def main():
+def main(gui=False):
     if os.path.exists('snake.pkl') and USE_PICKLED:
         try:
             snake = pkl.load(open('snake.pkl', 'rb'))
-            snake.min_epsilon = 0.01
-            snake.flat_action_space = 3
             snake.losses = []
             snake.rewards = []
             print('using pickled snake')
@@ -33,10 +31,10 @@ def main():
     all_scores = []
     try:
         for i in range(1, num_games + 1):
-            if np.nan in snake.model.layers[-1]:
+            if np.isnan(snake.model.layers[0][0][0]):
                 print('nan encountered')
                 raise KeyboardInterrupt
-            all_scores.append(SnakeEnvironment.game(snake))
+            all_scores.append(SnakeEnvironment.game(snake, gui=gui))
             completed = i / num_games
             time_diff = time.time() - start_time
             time_left = time_diff / (completed + 1e-100) - time_diff
@@ -45,10 +43,12 @@ def main():
                 percent_string += '0' * (6 - len(percent_string))
             sys.stdout.write(f'\rgames completed: {percent_string}%, estimated time: {seconds_to_string(time_left)}')
             sys.stdout.flush()
+
     except KeyboardInterrupt:
         print()
         print("Interrupted")
     print()
+    pygame.quit()
     rewards = snake.rewards
     losses = snake.losses
     snake.losses = []
@@ -60,9 +60,9 @@ def main():
 
     if USE_PICKLED:
         pkl.dump(snake, open('snake.pkl', 'wb'))
-    #norm_const = 1 #len(all_scores) // 1000
-    #norm = len(all_scores) // norm_const
-    #all_scores = np.convolve(all_scores, np.ones(norm) / norm)
+    # norm_const = 1 #len(all_scores) // 1000
+    # norm = len(all_scores) // norm_const
+    # all_scores = np.convolve(all_scores, np.ones(norm) / norm)
     norm = len(rewards) // 100
     rewards = np.convolve(rewards, np.ones(norm) / norm)
     norm = len(losses) // 100

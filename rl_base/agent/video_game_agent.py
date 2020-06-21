@@ -30,15 +30,17 @@ class VideoGameAgent(Agent, abc.ABC):
                 _reward[action] = reward
             else:
                 _reward[action] = reward + self.gamma * (np.amax(self.model.predict(new_state)))
-            _reward -= _reward.min()
-            _reward /= _reward.sum()
+                if self.normalize_reward:
+                    _reward -= _reward.min()
+                    _reward /= _reward.sum()
             label.append(_reward)
         self.losses.append(self.model.train(np.array(data), np.array(label)))
 
     def conclude(self):
         pass
 
-    def __init__(self, model: PredictionModel, flat_action_space: int, epsilon=1.0, gamma=0.9, max_memory_size=500, allow_random_actions=True,
+    def __init__(self, model: PredictionModel, flat_action_space: int, epsilon=1.0, gamma=0.9, max_memory_size=500,
+                 allow_random_actions=True, normalize_reward=False,
                  min_epsilon=0.01, epsilon_decay=0.99):
         super().__init__()
         self.model = model
@@ -48,6 +50,7 @@ class VideoGameAgent(Agent, abc.ABC):
         self.min_epsilon = min_epsilon
         self.epsilon_decay = epsilon_decay
         self.max_memory_size = max_memory_size
+        self.normalize_reward = normalize_reward
         self.memory_state = []
         self.losses = []
         self.rewards = []

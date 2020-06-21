@@ -69,5 +69,5 @@ class ArcTan(NonLinearityFunction):
 class SoftMax(Sigmoid):
     @staticmethod
     def calc(x):
-        e = np.exp(x)
-        return e / (1 + e)
+        e = Sigmoid.calc(x)
+        return e / np.sum(e)
