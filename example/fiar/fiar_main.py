@@ -8,19 +8,21 @@ from example.fiar.fiar_environment import FIAREnvironment
 from example.fiar.fiar_human import FIARHuman
 from module_tools.string_tools import seconds_to_string, delete_last_line
 
+USE_PICKLED = False
+
 
 def main():
-    if os.path.exists('red_player.pkl'):
+    if os.path.exists('red_player.pkl') and USE_PICKLED:
         red_player = pkl.load(open('red_player.pkl', 'rb'))
         print('using pickled red')
     else:
         red_player = FIARAgent('RED')
-    if os.path.exists('yellow_player.pkl'):
+    if os.path.exists('yellow_player.pkl') and USE_PICKLED:
         yellow_player = pkl.load(open('yellow_player.pkl', 'rb'))
         print('using pickled yellow')
     else:
         yellow_player = FIARAgent('YELLOW')
-    num_games = 100000  # 10000000 to train from scratch
+    num_games = 10000000  # 10000000 to train from scratch
     start_time = time.time()
     print()  # for delete last line
     was_interrupted = False
@@ -36,29 +38,37 @@ def main():
             if len(percent_string) < 6:
                 percent_string += '0' * (6 - len(percent_string))
             # delete_last_line()
-            print(f'\rgames completed: {percent_string}%, estimated time: {seconds_to_string(time_left)}', end='', flush=True)
+            print(f'\rgames completed: {percent_string}%, estimated time: {seconds_to_string(time_left)}', end='',
+                  flush=True)
     except KeyboardInterrupt:
         was_interrupted = True
-        import traceback
-        traceback.print_exc()
         print("Interrupted by user")
     print()
     print('finished running games')
+    print(red_player.epsilon)
+    for i in red_player.model.layers:
+        print(i.max(), i.min())
     red_player.memory.clear()
     yellow_player.memory.clear()
-    pkl.dump(red_player, open('red_player.pkl', 'wb'))
-    pkl.dump(yellow_player, open('yellow_player.pkl', 'wb'))
+    if USE_PICKLED:
+        pkl.dump(red_player, open('red_player.pkl', 'wb'))
+        pkl.dump(yellow_player, open('yellow_player.pkl', 'wb'))
     if was_interrupted:
         exit(1)
-    return  # For repetitive training
+    # return  # For repetitive training
     red_player.epsilon = 0
     yellow_player.epsilon = 0
-    while True:
-        new_x_player = FIARHuman()
-        print(FIAREnvironment.game(new_x_player, yellow_player, has_human_players=True))
+    try:
+        while True:
+            new_x_player = FIARHuman()
+            print(FIAREnvironment.game(new_x_player, yellow_player, has_human_players=True))
 
-        new_o_player = FIARHuman()
-        print(FIAREnvironment.game(red_player, new_o_player, has_human_players=True))
+            new_o_player = FIARHuman()
+            print(FIAREnvironment.game(red_player, new_o_player, has_human_players=True))
+    except:
+        pass
+    import IPython
+    IPython.embed()
 
 
 if __name__ == '__main__':

@@ -11,7 +11,7 @@ class FIARHuman(Agent):
         while True:
             try:
                 x = int(input('Enter Row Index >>> '))
-                action = np.zeros(8)
+                action = np.zeros(7)
                 action[x] = 1
                 break
             except Exception as e:

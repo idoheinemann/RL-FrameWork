@@ -39,7 +39,7 @@ class BoardGameEnvironment(Environment, abc.ABC):
         return self.BoardGameReward(index=len(self.rewards[agent]) - 1, env=self, agent=agent), action_index
 
     @abc.abstractmethod
-    def _perform(self, index: int, agent: Agent):
+    def _perform(self, index: int, agent: Agent) -> bool:
         pass
 
     def _get_agent_index(self, agent):

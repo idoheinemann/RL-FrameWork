@@ -6,8 +6,10 @@ from rl_base.ml.non_linearity_function import NonLinearityFunctionType
 from rl_base.ml.prediction_model import PredictionModel
 from rl_base.ml.tools.functions import Sigmoid, Tanh
 
+
 def unit(x):
     return x
+
 
 class NeuralNetwork(PredictionModel):
     def __init__(self, layers_num: Iterable[int],
@@ -50,7 +52,7 @@ class NeuralNetwork(PredictionModel):
         error = label - inp
         deltas = [self.non_lin_funcs[-1].deriv(inp) * error]
         for i in range(len(self.layers) - 1, 0, -1):
-            deltas.append(self.non_lin_funcs[i-1].deriv(inputs[i]) * np.dot(deltas[-1], self.layers[i].T))
+            deltas.append(self.non_lin_funcs[i - 1].deriv(inputs[i]) * np.dot(deltas[-1], self.layers[i].T))
             # delta[i] = (delta[i+1]*layer[i+1]) .* f[i]'(input[i])
 
         deltas.reverse()
