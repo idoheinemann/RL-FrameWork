@@ -11,9 +11,10 @@ import matplotlib.pyplot as plt
 from module_tools.string_tools import seconds_to_string
 
 USE_PICKLED = True
+USE_GUI = True
 
 
-def main(gui=False):
+def main():
     if os.path.exists('snake.pkl') and USE_PICKLED:
         try:
             snake = pkl.load(open('snake.pkl', 'rb'))
@@ -34,7 +35,7 @@ def main(gui=False):
             if np.isnan(snake.model.layers[0][0][0]):
                 print('nan encountered')
                 raise KeyboardInterrupt
-            all_scores.append(SnakeEnvironment.game(snake, gui=gui))
+            all_scores.append(SnakeEnvironment.game(snake, gui=USE_GUI))
             completed = i / num_games
             time_diff = time.time() - start_time
             time_left = time_diff / (completed + 1e-100) - time_diff
